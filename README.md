@@ -26,19 +26,7 @@ WebSocket /ws?token=
 - **限流**：每用户 2 秒最多 5 条。
 - **水平扩展**：`Hub.publish` 可换成 Redis Pub/Sub，连接仍粘在本机。
 
-## 简历写法
 
-**中文**
-
-- 基于 FastAPI 实现即时通讯后端，REST 负责房间与历史消息，WebSocket 负责实时投递、输入中和在线状态。
-- 私聊按双方用户 ID 排序生成唯一键，避免重复会话；消息落库后按房间广播，非成员无法加入。
-- 实现未读计数、发送限流和进程内 Pub/Sub（可替换 Redis），并提供双窗口静态 Demo 页便于面试演示。
-
-**English**
-
-- Built a FastAPI IM backend with JWT auth, persisted messages, and WebSocket fan-out for rooms, typing, and presence.
-- Designed idempotent DM rooms via a sorted user-id key, unread counters, and per-user send rate limiting.
-- Isolated room membership on every join/send and documented a Redis-shaped in-process pub/sub for multi-instance scale-out.
 
 ## 本地运行
 
@@ -81,13 +69,5 @@ WebSocket JSON：
 ```
 
 服务端事件：`joined` / `message` / `typing` / `presence` / `error`
-
-## 面试可讲点
-
-1. **连接管理**：socket ↔ user ↔ rooms 三张映射，断线清理并广播离线。
-2. **鉴权**：HTTP Bearer；WS 用 query token，避免浏览器 WS 带不了 Header。
-3. **消息顺序**：先写库拿到自增 id 再广播，历史按 id 排序。
-4. **扩展**：单机进程内 Hub；多实例用 Redis 频道 `room:{id}`。
-5. **安全**：成员校验、内容长度、发送限流。
 
 生产环境请修改 `SECRET_KEY`。
